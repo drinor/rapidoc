@@ -16,7 +16,7 @@ describe Rapidoc::ResourcesExtractor do
     end
 
      it "return correct resource methods" do
-      users_methods = @resources_info["users"].map{ |m| m[:method] }.uniq
+      users_methods = @resources_info["users"].map{ |m| m["method"] }.uniq
 
       users_methods.should be_include( "GET" )
       users_methods.should be_include( "POST" )
@@ -25,7 +25,7 @@ describe Rapidoc::ResourcesExtractor do
     end
 
     it "return correct resource actions" do
-      users_actions = @resources_info["users"].map{ |m| m[:action] }
+      users_actions = @resources_info["users"].map{ |m| m["action"] }
 
       users_actions.should be_include( "index" )
       users_actions.should be_include( "show" )
@@ -54,9 +54,12 @@ describe Rapidoc::ResourcesExtractor do
       files.should be_include( "albums_controller.rb" )
     end
 
-    it "return correct resource_methods" do
-      resource_methods = @resources.last.resource_methods
-      resource_methods.should ==  get_resources_info[ @resources.last.name ]
+    it "return correct resource actions" do
+      @resources.each{ |r| @user = r if r.name == "users" }
+      actions = @user.resource_actions.map{ |r| r.action }
+      actions.should be_include( 'index' )
+      actions.should be_include( 'show' )
+      actions.should be_include( 'create' )
     end
 
     it "return correct order" do

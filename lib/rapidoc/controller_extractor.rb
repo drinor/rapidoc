@@ -14,24 +14,27 @@ module Rapidoc
   class ControllerExtractor
 
     def initialize( controller_file )
-      @lines = IO.readlines( controller_dir( controller_file ) )
+      if File.exists? controller_dir( controller_file )
+        @lines = IO.readlines( controller_dir( controller_file ) )
 
-      # gets init and end lines of each comment block
-      init_doc_lines = @lines.each_index.select{ |i| @lines[i].include? "=begin" }
-      end_doc_lines = @lines.each_index.select{ |i| @lines[i].include? "=end" }
+        # gets init and end lines of each comment block
+        init_doc_lines = @lines.each_index.select{ |i| @lines[i].include? "=begin" }
+        end_doc_lines = @lines.each_index.select{ |i| @lines[i].include? "=end" }
 
-      @blocks = init_doc_lines.each_index.map do |i|
-        { :init => init_doc_lines[i], :end => end_doc_lines[i] }
+        @blocks = init_doc_lines.each_index.map do |i|
+          { :init => init_doc_lines[i], :end => end_doc_lines[i] }
+        end
       end
     end
 
     def get_actions_info
       info = []
+      @blocks = [] unless @blocks
 
       @blocks.each.map do |b|
         if @lines[ b[:init] ].include? "=begin action"
           n_lines = b[:end] - b[:init] - 1
-          info.push YAML.load( @lines[ b[:init] +1, n_lines ].join.gsub(/\ *#/, '') )
+          info << YAML.load( @lines[ b[:init] +1, n_lines ].join.gsub(/\ *#/, '') )
         end
       end
 
@@ -39,7 +42,7 @@ module Rapidoc
     end
 
     def get_resource_info
-      info = []
+      @blocks ? info = [] : @blocks = []
 
       @blocks.each.map do |b|
         if @lines[ b[:init] ].include? "=begin resource"
@@ -52,7 +55,11 @@ module Rapidoc
     end
 
     def get_controller_info
-      { "description" => get_resource_info, "actions" => get_actions_info }
+      { "description" => get_resource_info["description"], "actions" => get_actions_info }
+    end
+
+    def valid?
+      @lines ? true : false
     end
 
   end
