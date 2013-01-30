@@ -22,6 +22,13 @@ module Rapidoc
     FileUtils.cp_r GEM_ASSETS_DIR, target_dir
   end
 
+  def reset_structure
+    FileUtils.remove_dir target_dir if File.directory? target_dir
+    FileUtils.mkdir target_dir
+    FileUtils.cp_r GEM_CONFIG_DIR + "/.", config_dir
+    FileUtils.cp_r GEM_ASSETS_DIR, target_dir
+  end
+
   def remove_structure
     FileUtils.rm_r target_dir
   end
