@@ -5,11 +5,11 @@
     <title>Rapidoc</title>
     <meta name="description" content="Artículo en GenbetaDev sobre Bootstrap 2.0">
     <meta name="author" content="Rafael Jurado González" >
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-    <link href="assets/css/rapidoc.css" rel="stylesheet">
-    <link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <script src="assets/js/jquery-1.9.0.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
+    <link href="/{{info.resource_route}}/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/{{info.resource_route}}/assets/css/rapidoc.css" rel="stylesheet">
+    <link href="/{{info.resource_route}}/assets/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <script src="/{{info.resource_route}}/assets/js/jquery-1.9.0.min.js"></script>
+    <script src="/{{info.resource_route}}/assets/js/bootstrap.min.js"></script>
     <style>
       body { padding-top: 60px; }
     </style>
@@ -66,7 +66,7 @@
                     </td>
                     <td>
                       {{#if ../this.has_controller_info}}
-                        <a href="actions/{{../../this.resource}}_{{../../this.action}}.html">{{this}}<a>
+                        <a href="actions/{{../../this.resource_name}}_{{../../this.action}}.html">{{this}}<a>
                       {{else}}
                         {{this}}
                       {{/if}}
