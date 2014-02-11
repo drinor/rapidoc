@@ -10,8 +10,8 @@ module Rapidoc
   #
   class ActionDoc
     attr_reader :resource, :urls, :action, :action_method, :description,
-      :response_formats, :authentication, :params, :file, :http_responses,
-      :errors, :example_res, :example_req
+      :response_formats, :authentication, :params, :headers, :file, :http_responses,
+      :errors, :example_res, :example_req, :resource_name
 
     ##
     # @param resource [String] resource name
@@ -19,11 +19,12 @@ module Rapidoc
     # @param urls [Array] all urls that call this method
     #
     def initialize( routes_info, controller_info, examples_route )
+      @resource_name    = routes_info[:resource].split('/').last
       @resource         = routes_info[:resource].to_s
       @action           = routes_info[:action].to_s
       @action_method    = routes_info[:method].to_s || '-----'
       @urls             = routes_info[:urls]
-      @file             = @resource + '_' + @action
+      @file             = @resource + '/' + @action
 
       puts " - Generating #{@action} action documentation..." if trace?
 
@@ -43,6 +44,7 @@ module Rapidoc
       @description      = controller_info["description"]
       @response_formats = default_response_formats || controller_info["response_formats"]
       @params           = controller_info["params"]
+      @headers          = controller_info["headers"]
       @http_responses   = get_http_responses controller_info["http_responses"]
       @errors           = controller_info["errors"] ? controller_info["errors"].dup : []
       @authentication   = get_authentication controller_info["authentication_required"]
@@ -50,7 +52,7 @@ module Rapidoc
     end
 
     def get_authentication( required_authentication )
-      if [ true, false ].include? required_authentication 
+      if [ true, false ].include? required_authentication
         required_authentication
       else
         default_authentication
@@ -75,14 +77,14 @@ module Rapidoc
     end
 
     def load_request( examples_route )
-      file = examples_route + '/' + @resource + '_' + @action + '_request.json'
+      file = examples_route + '/' + @resource + '/' + @action + '_request.json'
       return unless File.exists?( file )
       puts "  + Loading request examples..." if trace?
       File.open( file ){ |f| @example_req = JSON.pretty_generate( JSON.parse(f.read) ) }
     end
 
     def load_response( examples_route )
-      file = examples_route + '/' + @resource + '_' + @action + '_response.json'
+      file = examples_route + '/' + @resource + '/' + @action + '_response.json'
       return unless File.exists?( file )
       puts "  + Loading response examples..." if trace?
       File.open( file ){ |f| @example_res = JSON.pretty_generate( JSON.parse(f.read) ) }

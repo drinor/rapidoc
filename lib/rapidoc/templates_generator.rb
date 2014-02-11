@@ -8,7 +8,6 @@ module Rapidoc
     def generate_index_template( resources_doc )
       template = get_index_template
       result = template.call( :info => rapidoc_config, :resources => resources_doc )
-
       File.open( target_dir("index.html"), 'w' ) { |file| file.write result }
     end
 
@@ -53,7 +52,14 @@ module Rapidoc
 
     def create_action_template( template, action_doc )
       result = template.call( :info => rapidoc_config, :action => action_doc )
-      File.open( actions_dir("#{action_doc.file}.html"), 'w' ) { |file| file.write result }
+      resource = action_doc.resource.split('/').last
+      action = action_doc.action
+      dir_name = File.dirname(actions_dir("#{resource}"))
+      dir_name += "/#{resource}"
+      unless File.directory?(dir_name)
+        FileUtils.mkdir_p(dir_name)
+      end
+      File.open( actions_dir("#{resource}/#{action}.html"), 'w' ) { |file| file.write result }
     end
 
     def get_action_template
